@@ -1,0 +1,28 @@
+# stock-manipulation
+handling and graphing stock data
+from matplotlib import pyplot as plt
+from matplotlib import style
+import pandas as pd
+import yfinance as yf
+from datetime import datetime
+import matplotlib.dates as mdates
+
+style.use("ggplot")
+start = datetime(2010,1,1)
+end= datetime(2025,3,21)
+df = yf.download('TSLA',start=start, end=end)
+df.to_csv("tsla.csv")
+#df = pd.read_csv("tsla.csv", parse_dates=True, index_col=0, date_format="%Y-%m-%d")
+# df["Volume"].plot()
+# plt.show()
+df["100ma"] = df["Volume"].rolling(window=100, min_periods=0).mean()
+print(df.head())
+
+ax1 = plt.subplot2grid((6,1), (0,0), rowspan=5, colspan=1)
+ax2 = plt.subplot2grid((6,1), (5,0), rowspan=1, colspan=1)
+
+ax1.plot(df.index, df["Volume"])
+ax1.plot(df.index, df["100ma"])
+df["High"].plot.bar(ax=ax2, width=0.8)
+
+plt.show()
